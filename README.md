@@ -30,7 +30,7 @@ a pythonic UI framewok, no need of dirty javascript &amp; html anymore
 如果需要遮罩方式弹出显示:
 
     from easydo_ui import ui, app_player
-    view = app_player.get_controller()
+    view = app_player.get_view()
     view.modal(form)
     return view.javascript()
 
@@ -52,16 +52,54 @@ a pythonic UI framewok, no need of dirty javascript &amp; html anymore
 
 ## ui组件库
 
+类似bootstrap，easydo-ui提供了一组界面组件：
 
+    ui.h1
+    ui.text
+    ui.paragraph
+    ui.link
+    ui.button
+    ui.button_group
+    ui.tree
+    ui.tabs
+    ui.list_group
+    ui.panel
 
 ## 扩展ui组件
 
+如果需要扩展一个新的ui组件，可以 @ui_component 修饰器来定义:
 
+    form easydo_ui import ui_compoent, BaseElement
+    
+    @ui_component
+    class mytree(BaseElement):
+    
+        def html(self):
+            result = ''
+            # TODO render as html
+            return result
+
+一旦定义，可以如下引用:
+
+    ui.mytree
 
 ## view指令
 
+常见的view指令包括:
 
+    view.message
+    view.modal
+    view.close_modal()
+    view.find
+    view.select
+    view.closest
+    view.on
+    view.trigger
 
 ## 扩展view指令
 
+    form easydo_ui import view_commands, BaseViewCommands
 
+    @view_command
+    class mytree(BaseViewCommands):
+        pass
