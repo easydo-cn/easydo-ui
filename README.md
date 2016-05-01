@@ -29,8 +29,8 @@ a pythonic UI framewok, no need of dirty javascript &amp; html anymore
 
 如果需要遮罩方式弹出显示:
 
-    from easydo_ui import ui, app_player
-    view = app_player.get_view()
+    from easydo_ui import ui, Commands()
+    view = Commands()
     view.modal(form)
     return view.javascript()
 
