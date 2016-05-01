@@ -1,0 +1,12 @@
+<configure xmlns:zope="http://namespaces.zope.org/zope"
+           xmlns="http://namespaces.zope.org/browser"
+            xmlns:i18n="http://namespaces.zope.org/i18n"
+           xmlns:kss="http://namespaces.zope.org/kss"
+           i18n_domain="zopen.todo">
+
+
+  <resource
+          name="base.js"
+          file="js/base.js" />
+
+</configure>
