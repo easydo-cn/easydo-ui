@@ -434,7 +434,7 @@ class Commands(JqueryMixin, SelectorMixin, EDOMixin):
     def clear(self):
         self._append_script("val('')")
 
-    def generate_js(self):
+    def javascript(self):
         # load 模式
         if '"use load";' in self._scripts:
             return self.load(self._files, self._scripts)
