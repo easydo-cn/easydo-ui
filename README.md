@@ -103,3 +103,7 @@ a pythonic UI framewok, no need of dirty javascript &amp; html anymore
     @view_command
     class mytree(BaseViewCommands):
         pass
+
+## 应用运行器
+
+应用运行器需要加载 easydo-ui.js
