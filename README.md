@@ -82,9 +82,9 @@ a pythonic UI framewok, no need of dirty javascript &amp; html anymore
 
 如果需要扩展一个新的ui组件，可以 @ui_component 修饰器来定义:
 
-    form easydo_ui import component, command
+    form easydo_ui import component_ui, component_commands, BaseCommands
 
-    @component
+    @component_ui
     class mytree(BaseElement):
 
         def html(self):
@@ -92,7 +92,9 @@ a pythonic UI framewok, no need of dirty javascript &amp; html anymore
             # TODO render as html
             return result
 
-        @command
+    @component_commands('mytree')
+    class mytree_commands(BaseCommands):
+
         def expand(self):
             pass
 
