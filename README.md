@@ -29,7 +29,7 @@ a pythonic UI framewok, no need of dirty javascript &amp; html anymore
 
 如果需要遮罩方式弹出显示:
 
-    from easydo_ui import ui, Commands()
+    from easydo_ui import ui, Commands
     view = Commands()
     view.modal(form)
     return view.javascript()
@@ -65,24 +65,6 @@ a pythonic UI framewok, no need of dirty javascript &amp; html anymore
     ui.list_group
     ui.panel
 
-## 扩展ui组件
-
-如果需要扩展一个新的ui组件，可以 @ui_component 修饰器来定义:
-
-    form easydo_ui import ui_compoent, BaseElement
-    
-    @ui_component
-    class mytree(BaseElement):
-    
-        def html(self):
-            result = ''
-            # TODO render as html
-            return result
-
-一旦定义，可以如下引用:
-
-    ui.mytree
-
 ## view指令
 
 常见的view指令包括:
@@ -96,13 +78,28 @@ a pythonic UI framewok, no need of dirty javascript &amp; html anymore
     view.on
     view.trigger
 
-## 扩展view指令
+## 扩展组件
 
-    form easydo_ui import view_commands, BaseViewCommands
+如果需要扩展一个新的ui组件，可以 @ui_component 修饰器来定义:
 
-    @view_command
-    class mytree(BaseViewCommands):
-        pass
+    form easydo_ui import component, command
+
+    @component
+    class mytree(BaseElement):
+
+        def html(self):
+            result = ''
+            # TODO render as html
+            return result
+
+        @command
+        def expand(self):
+            pass
+
+一旦定义，可以如下引用:
+
+    ui.mytree
+    view.find('mytree').expand()
 
 ## 应用运行器
 
