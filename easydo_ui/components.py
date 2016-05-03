@@ -1,15 +1,13 @@
 # encoding: utf-8
 import cgi, os
+from hashlib import md5
 import json
 import random
 import urlparse
 from types import StringTypes
 from tempfile import NamedTemporaryFile
-from commands import component_commands
-
-from zopen.kssaddons.kss import KssCommands
-from zopen.navtree.api import render_navtree
-
+from utils import component_commands, component_ui
+from commands import BaseCommands
 
 class BaseUI:
 
@@ -18,55 +16,6 @@ class BaseUI:
 
     def __str__(self):
         return self.html()
-
-class BaseKss:
-    name = ''
-    selector = ''
-
-    def __init__(self, kss):
-        self.kss = kss
-
-    def set_content(self, content='', js_var=None):
-        self.kss.set_content(content, js_var)
-
-    def append(self, content):
-        self.kss.append(content)
-
-    def prepend(self, content):
-        self.kss.prepend(content)
-
-    def brefore(self, content):
-        self.kss.before(content)
-
-    def after(self, content):
-        self.kss.after(content)
-
-    def empty(self):
-        self.kss.empty()
-
-    def off(self, event):
-        self.kss.remove_class('kss')
-        return self
-
-    def trigger(self, event_name, data):
-        self.kss.trigger(event_name, data)
-        return self
-
-    def find(self, selector):
-        self.kss.find(selector)
-        return self
-
-    def children(self, selector):
-        self.kss.children(selector)
-        return self
-
-    def filter(self, selector):
-        self.kss.filter(selector)
-        return self
-
-    def exclude(self, selector):
-        self.kss.exclude(selector)
-        return self
 
 class CompositeUI(BaseUI):
 
@@ -187,6 +136,7 @@ class Element(BaseUI):
         else:
             return _html
 
+@component_ui
 class script(Element):
     el = 'script'
 
@@ -205,24 +155,31 @@ class script(Element):
     def html(self):
         return '<script type="text/javascript">$(function(){%s});</script>' % self.kss.generate_js()
 
+@component_ui
 class h1(Element):
     el = 'h1'
 
+@component_ui
 class h2(Element):
     el = 'h2'
 
+@component_ui
 class h3(Element):
     el = 'h3'
 
+@component_ui
 class h4(Element):
     el = 'h4'
 
+@component_ui
 class h5(Element):
     el = 'h5'
 
+@component_ui
 class image(Element):
     el = 'image'
 
+@component_ui
 class link(Element):
     el = 'a'
 
@@ -261,6 +218,7 @@ class link(Element):
         self.klass.append('disable')
         return self
 
+@component_ui
 class button(link):
     el = 'button'
     _klass = ['button']
@@ -285,6 +243,7 @@ class button(link):
             self.klass.append('btn-xs')
         return self
 
+@component_ui
 class text(Element):
     el = 'span'
     _text = ''
@@ -304,12 +263,15 @@ class text(Element):
         self.klass.append('discreet')
         return self
 
+@component_ui
 class paragraph(text):
     el = 'p'
 
+@component_ui
 class badge(text):
     _klass = ['badge']
 
+@component_ui
 class pre(text):
     el = 'pre'
 
@@ -317,9 +279,11 @@ class pre(text):
         title = cgi.escape(title)
         text.__init__(self, title, **attr)
 
+@component_ui
 class div(Element):
     el = 'div'
 
+@component_ui
 class raw(Element):
     _html = ''
 
@@ -330,6 +294,7 @@ class raw(Element):
     def html(self):
         return self._html
 
+@component_ui
 class html(Element):
     _html = ''
 
@@ -350,7 +315,7 @@ class html(Element):
 
         return '<div %s %s>%s</div>' % (attr, data, self._html)
 
-@component
+@component_ui
 class panel(Element):
 
     def __init__(self, *arg, **attr):
@@ -480,7 +445,9 @@ class panel(Element):
             self._toolbox = element.html()
         return self
 
-    @command
+@component_commands('panel')
+class PanelCommands(BaseCommands):
+
     def panel_body(self):
         if self.kss._selector.startswith('$(NODE)'):
             self.kss.find('.panel-body').remove_class('hidden')
@@ -489,6 +456,7 @@ class panel(Element):
             self.kss.find('.panel-body')
         return self
 
+@component_ui
 class layout(Element):
     _direction = 'horizontal'
 
@@ -530,6 +498,7 @@ class layout(Element):
         self.child(widget)
         return self
 
+@component_ui
 class list_group(Element):
 
     def __init__(self, *arg, **kw):
@@ -549,6 +518,7 @@ class list_group(Element):
         content += '</ul>'
         return content
 
+@component_ui
 class button_group(Element):
 
     def __init__(self, *arg, **kw):
@@ -561,6 +531,7 @@ class button_group(Element):
         return '<div id="%s" class="%s button-group">%s</div>'\
                  % (self.id, ' '.join(self.klass), ''.join([x.html() for x in self.children]))
 
+@component_ui
 class nav(Element):
 
     def __init__(self, *arg, **kw):
@@ -573,6 +544,7 @@ class nav(Element):
         return '<nav id="%s" class="%s"><ul>%s</ul></nav>'\
                    % (self.id, ' '.join(self.klass), ''.join(['<li>%s</li>' % x.html() for x in self.children]))
 
+@component_ui
 class grid(Element):
 
     def __init__(self, rows, columns, **kw):
@@ -644,6 +616,7 @@ class grid(Element):
 """ % {'grid_id':self.id, 'on_drop':on_drop[0][0]}
         return html
 
+@component_ui
 class menu(Element):
 
     def __init__(self, *arg, **kw):
@@ -680,9 +653,11 @@ class menu(Element):
                 items.append('<li><a href="%s">%s</a></li>' % (url, title))
         return '<ul id="%s" class="%s">%s</ul>' % (self.id, ' '.join(self.klass), ''.join(items))
 
+@component_ui
 class seperator(Element):
     pass
 
+@component_ui
 class tabs(Element):
 
     def __init__(self, **kw):
@@ -719,9 +694,8 @@ class tabs(Element):
         return '<div id="%s" class="%s tabArea">%s<div class="visualClear"><!-- --></div>%s</div>' \
                      % (self.id, ' '.join(self.klass), header, content)
 
-@component_commands
-class KssTabs(BaseKss):
-    name = 'tabs'
+@component_commands('tabs')
+class KssTabs(BaseCommands):
     selector = '.tabArea'
 
     def active_panel(self):
@@ -750,78 +724,27 @@ class KssTabs(BaseKss):
         self.kss.append('<div id="%s" class="tabBody hidden">%s</div>' % (link.attr['href'][1:], panel.html()))
 
 
-@component_commands
-class KssLayout(BaseKss):
+def render_navtree(navtree_data, node_template=None, load=False):
+    load = load and 'true' or 'false'
+    if node_template is None:
+        node_template = '''<a href="{{href}}">{{title}}</a>'''
 
-    def main(self):
-        self.kss.select('#content')
-        return self
+    m = md5()
+    m.update(node_template + str(random.randrange(0, 100)))
+    template_md5 = m.hexdigest()
+    return '''<div id="nav_%(md5)s" class="navtree" kssattr:templ="templ_%(md5)s">
+                  <script type="text/javascript">
+                      var templ_%(md5)s = Handlebars.compile('%(template)s');
+                      $('#nav_%(md5)s').html(render_navtree(%(json)s, templ_%(md5)s, %(load)s));
+                  </script>
+              </div>
+           ''' % {'md5': template_md5,
+                  'template': node_template.replace('\'', '\\\'').replace('\n', r'\n').replace('\r', r'\r'),
+                  'json': json.dumps(navtree_data),
+                  'load': load,
+                  }
 
-    def left(self):
-        self.kss.select('#columns').add_class('leftcol')
-        self.kss.select('#left .visualPadding')
-        return self
-
-    def right(self):
-        self.kss.select('#columns').add_class('rightcol')
-        self.kss.select('#right .visualPadding')
-        return self
-
-    def above(self):
-        self.kss.select('#viewlet-above-content')
-        return self
-
-    def top(self):
-        self.kss.select('#top')
-        return self
-
-    def hide_right(self):
-        self.kss.select('#columns').remove_class('rightcol')
-        return self.kss.select('#right').add_class('hidden')
-
-    def hide_left(self):
-        self.kss.select('#columns').remove_class('leftcol')
-        return self.kss.select('#left').add_class('hidden')
-
-    def show_right(self):
-        self.kss.select('#columns').add_class('rightcol')
-        return self.kss.select('#right').remove_class('hidden')
-
-    def show_left(self):
-        self.kss.select('#columns').add_class('leftcol')
-        return self.kss.select('#left').remove_class('hidden')
-
-class KssCookie(BaseKss):
-
-    def set(self, name, value, expires=36500, path='/'):
-        return self.kss.set_cookie(name, value, expires, path)
-
-    def remove(self, name, path='/'):
-        return self.kss.remove_cookie(name, path)
-
-class KssBatchActions(BaseKss):
-
-    def close(self):
-        return self.kss.close_batch_actions()
-
-    def set_content(self, content):
-        return self.kss.set_batch_actions(content)
-
-class History(BaseKss):
-
-    def push_state(self, request, title, url=''):
-        return self.kss.push_state(request, title, url)
-
-    def go(self, step):
-        return self.kss.go(step)
-
-KssCommands.history = property(History)
-KssCommands.layout = property(KssLayout)
-KssCommands.cookie = property(KssCookie)
-KssCommands.batch_actions = property(KssBatchActions)
-KssCommands.assistant = property(Assistant)
-KssCommands.rtc = property(KssMessage)
-
+@component_ui
 class tree(Element):
 
     def __init__(self, *arg, **kw):
@@ -863,7 +786,8 @@ class tree(Element):
             (self.id, ' '.join(self.klass),
              render_navtree(self._get_items(self.children), template))
 
-class KssTree(BaseKss):
+@component_commands('tree')
+class KssTree(BaseCommands):
     name = 'tree'
     selector = '.ui-tree'
 
@@ -895,8 +819,8 @@ class KssTree(BaseKss):
         self.kss.remove_class('loadTree')
         return self
 
-KssCommands.register_component(KssTree)
 
+@component_ui
 class graph(Element):
 
     def __init__(self, rankdir="UD", **kw):
@@ -962,6 +886,4 @@ $('div.ui-graph .edge a').click(view_edit_from)
 </script>""" % \
                 (self.id, ' '.join(self.klass), self.dot2graph(source))
 
-from . import message
-message  # evaluate one time to get rid of flake8 unused import warning
 

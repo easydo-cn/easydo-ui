@@ -435,4 +435,122 @@ class Commands(JqueryMixin, SelectorMixin, EDOMixin):
         else:
             return '\n'.join(self._scripts)
 
+class BaseCommands:
+    name = ''
+    selector = ''
+
+    def __init__(self, kss):
+        self.kss = kss
+
+    def set_content(self, content='', js_var=None):
+        self.kss.set_content(content, js_var)
+
+    def append(self, content):
+        self.kss.append(content)
+
+    def prepend(self, content):
+        self.kss.prepend(content)
+
+    def brefore(self, content):
+        self.kss.before(content)
+
+    def after(self, content):
+        self.kss.after(content)
+
+    def empty(self):
+        self.kss.empty()
+
+    def off(self, event):
+        self.kss.remove_class('kss')
+        return self
+
+    def trigger(self, event_name, data):
+        self.kss.trigger(event_name, data)
+        return self
+
+    def find(self, selector):
+        self.kss.find(selector)
+        return self
+
+    def children(self, selector):
+        self.kss.children(selector)
+        return self
+
+    def filter(self, selector):
+        self.kss.filter(selector)
+        return self
+
+    def exclude(self, selector):
+        self.kss.exclude(selector)
+        return self
+
+class KssLayout(BaseCommands):
+
+    def main(self):
+        self.kss.select('#content')
+        return self
+
+    def left(self):
+        self.kss.select('#columns').add_class('leftcol')
+        self.kss.select('#left .visualPadding')
+        return self
+
+    def right(self):
+        self.kss.select('#columns').add_class('rightcol')
+        self.kss.select('#right .visualPadding')
+        return self
+
+    def above(self):
+        self.kss.select('#viewlet-above-content')
+        return self
+
+    def top(self):
+        self.kss.select('#top')
+        return self
+
+    def hide_right(self):
+        self.kss.select('#columns').remove_class('rightcol')
+        return self.kss.select('#right').add_class('hidden')
+
+    def hide_left(self):
+        self.kss.select('#columns').remove_class('leftcol')
+        return self.kss.select('#left').add_class('hidden')
+
+    def show_right(self):
+        self.kss.select('#columns').add_class('rightcol')
+        return self.kss.select('#right').remove_class('hidden')
+
+    def show_left(self):
+        self.kss.select('#columns').add_class('leftcol')
+        return self.kss.select('#left').remove_class('hidden')
+
+
+class KssCookie(BaseCommands):
+
+    def set(self, name, value, expires=36500, path='/'):
+        return self.kss.set_cookie(name, value, expires, path)
+
+    def remove(self, name, path='/'):
+        return self.kss.remove_cookie(name, path)
+
+class KssBatchActions(BaseCommands):
+
+    def close(self):
+        return self.kss.close_batch_actions()
+
+    def set_content(self, content):
+        return self.kss.set_batch_actions(content)
+
+class History(BaseCommands):
+
+    def push_state(self, request, title, url=''):
+        return self.kss.push_state(request, title, url)
+
+    def go(self, step):
+        return self.kss.go(step)
+
+Commands.history = property(History)
+Commands.layout = property(KssLayout)
+Commands.cookie = property(KssCookie)
+Commands.batch_actions = property(KssBatchActions)
 
