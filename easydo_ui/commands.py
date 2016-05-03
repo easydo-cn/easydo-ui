@@ -1,9 +1,7 @@
 # -*- encoding:utf-8 -*-
 import json
 import urllib
-
 from types import StringTypes
-from zopen.utils.environ import get_base_url
 
 class JqueryMixin:
 
@@ -354,10 +352,6 @@ class EDOMixin:
     def disable_kss(self):
         self.remove_class('kss')
 
-    def set_base(self, context):
-        base_url = get_base_url(context, self.request)
-        self._append_script("$('base').attr('href','%s')" % base_url, False)
-
     def push_state(self, request, title, url=''):
         if request.is_mobile():
             # FIXME hack在微信等webview中无法修改document.title的情况
@@ -440,3 +434,5 @@ class Commands(JqueryMixin, SelectorMixin, EDOMixin):
             return self.load(self._files, self._scripts)
         else:
             return '\n'.join(self._scripts)
+
+

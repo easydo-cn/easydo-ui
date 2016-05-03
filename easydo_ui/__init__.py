@@ -1,3 +1,5 @@
 # -*- encoding:utf-8 -*-
-from kssview import KSSView
-from actionwrapper import kssaction
+from commands import SelectorMixin, Commands
+
+from ui import component_ui,  component_commands
+
