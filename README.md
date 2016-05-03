@@ -24,7 +24,7 @@ a pythonic UI framewok, no need of dirty javascript &amp; html anymore
 - 所谓应用运行器，是在浏览器上运行的初始页面，这个页面可以接受后端返回的view指令；
 
 
-下面输出一个表单::
+下面输出一个表单html::
 
     from easydo_ui import ui
     form = ui.form(title="注册", description="在这里完成注册表单")\
@@ -33,6 +33,11 @@ a pythonic UI framewok, no need of dirty javascript &amp; html anymore
               .button('register', '注册')\
               .on('submit', submit_url)
     return form.html()
+
+如果在模板主区域ajax显示::
+
+    view.layout.main().set_content(form)
+    return view.javascript()
 
 如果需要遮罩方式弹出显示:
 
@@ -83,7 +88,9 @@ a pythonic UI framewok, no need of dirty javascript &amp; html anymore
 
 应用运行器需要加载 easydo-ui.js. 
 
-也可以在javascript中，直接向后端发起一个内部调用，方法为：
+也可以在javascript中，直接向后端发起一个ajax调用，方法为：
+
+    TODO
 
 ## 扩展组件
 
@@ -107,5 +114,5 @@ a pythonic UI framewok, no need of dirty javascript &amp; html anymore
 
 一旦定义，可以如下引用:
 
-    ui.mytree
+    ui.mytree()
     view.find('mytree').expand()
