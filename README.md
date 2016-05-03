@@ -17,6 +17,13 @@ a pythonic UI framewok, no need of dirty javascript &amp; html anymore
 
 我们在后端使用python输出组件，执行应用的渲染和交互.
 
+理解ui、view、应用运行器:
+  
+- ui是组件界面库，用来生成html的；
+- view是应用运行器的控制器，用来生成javascript的；
+- 所谓应用运行器，是在浏览器上运行的初始页面，这个页面可以接受后端返回的view指令；
+
+
 下面输出一个表单::
 
     from easydo_ui import ui
@@ -43,12 +50,6 @@ a pythonic UI framewok, no need of dirty javascript &amp; html anymore
         # TODO: process result
         view.message('saved')
     return view.javascript()
-
-##  理解ui、view、应用运行器
-  
-- ui是组件界面库，用来生成html的；
-- view是应用运行器的控制器，用来生成javascript的；
-- 所谓应用运行器，是在浏览器上运行的初始页面，这个页面可以接受后端返回的view指令；
 
 ## ui组件库
 
@@ -78,6 +79,12 @@ a pythonic UI framewok, no need of dirty javascript &amp; html anymore
     view.on
     view.trigger
 
+## 应用运行器
+
+应用运行器需要加载 easydo-ui.js. 
+
+也可以在javascript中，直接向后端发起一个内部调用，方法为：
+
 ## 扩展组件
 
 如果需要扩展一个新的ui组件，可以 @ui_component 修饰器来定义:
@@ -102,7 +109,3 @@ a pythonic UI framewok, no need of dirty javascript &amp; html anymore
 
     ui.mytree
     view.find('mytree').expand()
-
-## 应用运行器
-
-应用运行器需要加载 easydo-ui.js
